@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import {
   Table,
   TableBody,
@@ -8,8 +8,13 @@ import {
   TableRow,
   TableSortLabel,
   Paper,
+  TextField,
+  Grid,
 } from '@mui/material';
-import { JobCount } from './api/jobCountApi'; // Adjust the path accordingly
+
+import { aggregateJobCountsByDate } from "@/app/dashboard/component/aggregateJobCounts";
+import JobCountsChart from "@/app/dashboard/component/jobCountsChart";
+import {JobCount} from "@/api/jobCountApi"; // Adjust the path accordingly
 
 type Order = 'asc' | 'desc';
 
@@ -49,6 +54,7 @@ function stableSort<T>(array: T[], comparator: (a: T, b: T) => number) {
 const JobCountsTable: React.FC<JobCountsTableProps> = ({ jobCounts }) => {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<keyof JobCount>('SalaryRange');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleRequestSort = (property: keyof JobCount) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -56,59 +62,83 @@ const JobCountsTable: React.FC<JobCountsTableProps> = ({ jobCounts }) => {
     setOrderBy(property);
   };
 
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredJobCounts = jobCounts.filter((jobCount) =>
+    Object.values(jobCount).some((value) =>
+      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  const aggregatedJobCounts = aggregateJobCountsByDate(filteredJobCounts);
+
+  // Get the headers of the table with non-zero values
+  const nonZeroHeaders = [
+    'date',
+    'SalaryRange',
+    'Total',
+    'Java',
+    'Python',
+    'JavaScript',
+    'TypeScript',
+    'ReactJS',
+    'VueJs',
+    'Spring',
+    'NodeJS',
+    'MySQL',
+    'NoSQL',
+  ].filter(header => filteredJobCounts.some(jobCount => jobCount[header as keyof JobCount] !== 0));
+
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {[
-              'date',
-              'SalaryRange',
-              'Total',
-              'Java',
-              'Python',
-              'JavaScript',
-              'TypeScript',
-              'ReactJS',
-              'VueJs',
-              'Spring',
-              'NodeJS',
-              'MySQL',
-              'NoSQL',
-            ].map((headCell) => (
-              <TableCell key={headCell}>
-                <TableSortLabel
-                  active={orderBy === headCell}
-                  direction={orderBy === headCell ? order : 'asc'}
-                  onClick={() => handleRequestSort(headCell as keyof JobCount)}
-                >
-                  {headCell}
-                </TableSortLabel>
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {stableSort(jobCounts, getComparator(order, orderBy)).map((jobCount) => (
-            <TableRow key={jobCount._id}>
-              <TableCell>{new Date(jobCount.date).toLocaleDateString()}</TableCell>
-              <TableCell>{jobCount.SalaryRange}</TableCell>
-              <TableCell>{jobCount.Total}</TableCell>
-              <TableCell>{jobCount.Java}</TableCell>
-              <TableCell>{jobCount.Python}</TableCell>
-              <TableCell>{jobCount.JavaScript}</TableCell>
-              <TableCell>{jobCount.TypeScript}</TableCell>
-              <TableCell>{jobCount.ReactJS}</TableCell>
-              <TableCell>{jobCount.VueJs}</TableCell>
-              <TableCell>{jobCount.Spring}</TableCell>
-              <TableCell>{jobCount.NodeJS}</TableCell>
-              <TableCell>{jobCount.MySQL}</TableCell>
-              <TableCell>{jobCount.NoSQL}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Paper>
+      <TextField
+        label="Search"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+
+        </Grid>
+        <Grid item xs={12}>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {nonZeroHeaders.map((headCell) => (
+                    <TableCell key={headCell}>
+                      <TableSortLabel
+                        active={orderBy === headCell}
+                        direction={orderBy === headCell ? order : 'asc'}
+                        onClick={() => handleRequestSort(headCell as keyof JobCount)}
+                      >
+                        {headCell}
+                      </TableSortLabel>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {stableSort(filteredJobCounts, getComparator(order, orderBy)).map((jobCount) => (
+                  <TableRow key={jobCount._id}>
+                    {nonZeroHeaders.map(header => (
+                      <TableCell key={header}>
+                        {header === 'date' ? new Date(jobCount[header as keyof JobCount] as string).toLocaleDateString() : jobCount[header as keyof JobCount]}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
 
