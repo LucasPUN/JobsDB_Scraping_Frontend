@@ -25,6 +25,7 @@ import JobCountsTable from "@/app/dashboard/component/jobCountsTable";
 import JobCountsChart from "@/app/dashboard/component/jobCountsChart";
 import {aggregateJobCountsByDate} from "@/app/dashboard/component/aggregateJobCounts";
 import JobFilter from "@/app/dashboard/component/seacrhBox";
+import {AppBar} from "@mui/material";
 
 
 function Copyright(props: any) {
@@ -39,67 +40,12 @@ function Copyright(props: any) {
   );
 }
 
-const drawerWidth: number = 240;
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({theme, open}) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})(
-  ({theme, open}) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
-
-// TODO remove, this demo shouldn't need to reset the theme.
-const defaultTheme = createTheme();
-
-
 export default function Dashboard() {
   const [open, setOpen] = React.useState(true);
   const [jobCounts, setJobCounts] = useState<JobCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-
 
 
   const filteredJobCounts = jobCounts.filter((jobCount) =>
@@ -131,98 +77,47 @@ export default function Dashboard() {
   }, []);
 
   return (
-
-
-    <ThemeProvider theme={defaultTheme}>
-      <Box sx={{display: 'flex'}}>
-        <CssBaseline/>
-        <AppBar position="absolute">
-          <Toolbar
-            sx={{
-              pr: '0px', // keep right padding when drawer closed
-            }}
-          >
-
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{flexGrow: 1}}
-            >
-              Dashboard
-            </Typography>
-
-          </Toolbar>
-        </AppBar>
-        {/*<Drawer variant="permanent" open={open}>*/}
-        {/*  <Toolbar*/}
-        {/*    sx={{*/}
-        {/*      display: 'flex',*/}
-        {/*      alignItems: 'center',*/}
-        {/*      justifyContent: 'flex-end',*/}
-        {/*      px: [1],*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    <IconButton onClick={toggleDrawer}>*/}
-        {/*      <ChevronLeftIcon/>*/}
-        {/*    </IconButton>*/}
-        {/*  </Toolbar>*/}
-        {/*  <Divider/>*/}
-        {/*  <List component="nav">*/}
-
-        {/*    <Divider sx={{my: 1}}/>*/}
-
-        {/*  </List>*/}
-        {/*</Drawer>*/}
-
-
-
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
+    <>
+      <AppBar position="absolute">
+        <Typography
+          component="h1"
+          variant="h6"
+          color="inherit"
+          noWrap
+          sx={{flexGrow: 1}}
         >
-          <Toolbar/>
-          <Container maxWidth="lg" sx={{mt: 4, mb: 4}}>
-            <Grid container spacing={3}>
-              {/* Chart */}
-              <JobFilter/>
-              <JobCountsTable jobCounts={jobCounts}/>
-            …
-              {/* Recent Deposits */}
-              <JobCountsChart aggregatedJobCounts={aggregatedJobCounts} />
-              <Grid item xs={12} md={4} lg={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: 240,
-                  }}
-                >
+          Dashboard
+        </Typography>
+      </AppBar>
 
-                </Paper>
-              </Grid>
-              {/* Recent Orders */}
-              <Grid item xs={12}>
-                <Paper sx={{p: 2, display: 'flex', flexDirection: 'column'}}>
 
-                </Paper>
-              </Grid>
+      <Box padding={5} sx={{display: 'flex', width: '68vw'}}>
+
+        <Grid container spacing={1}>
+
+          <JobFilter/>
+
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Paper sx={{p: 2, display: 'flex', flexDirection: 'column', height: '100%'}}>
+                <JobCountsTable jobCounts={jobCounts}/>
+              </Paper>
             </Grid>
-            <Copyright sx={{pt: 4}}/>
-          </Container>
-        </Box>
+
+            <Grid item xs={12} md={6}>
+              <Paper sx={{p: 2, display: 'flex', flexDirection: 'column', height: '100%'}}>
+                <JobCountsChart aggregatedJobCounts={aggregatedJobCounts}/>
+              </Paper>
+            </Grid>
+          </Grid>
+
+        </Grid>
       </Box>
-    </ThemeProvider>
+      <Copyright sx={{pt: 4}}/>
+
+
+    </>
   );
 
 }

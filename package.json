@@ -20,7 +20,8 @@
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "react-social-login-buttons": "^4.1.0"
+    "react-social-login-buttons": "^4.1.0",
+    "recharts": "^2.12.7"
   },
   "devDependencies": {
     "@types/node": "^20",

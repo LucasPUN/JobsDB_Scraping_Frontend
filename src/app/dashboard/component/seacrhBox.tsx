@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Grid, Box, Typography, Select, MenuItem, TextField } from '@mui/material';
+import JobTable from "@/app/dashboard/component/jobTable";
 
-import { Grid, Box, Typography, Select, MenuItem } from '@mui/material';
-import JobCard from "@/app/dashboard/component/jobCard";
-
-// 定义职位数据接口
 interface JobDetail {
   _id: string;
   date: string;
@@ -21,41 +19,40 @@ interface JobDetail {
 const JobFilter: React.FC = () => {
   const [minSalary, setMinSalary] = useState<string>('15000');
   const [maxSalary, setMaxSalary] = useState<string>('25000');
+  const [jobSubClassifications, setJobSubClassifications] = useState<string[]>([]);
+  const [jobSubClassification, setJobSubClassification] = useState('');
+  const [startDate, setStartDate] = useState<string>(''); // 新增开始日期状态
+  const [endDate, setEndDate] = useState<string>(''); // 新增结束日期状态
   const [jobs, setJobs] = useState<JobDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
 
-  // 工具函数：将查询参数对象转换为查询字符串
   const buildQueryString = (params: { [key: string]: string }) => {
     return new URLSearchParams(params).toString();
   };
 
-  // 获取职位列表的函数
   const fetchJobs = async () => {
     setLoading(true);
     try {
-      // 构建查询参数
       const queryString = buildQueryString({
         salaryRange: `${minSalary}-${maxSalary}`,
+        ...(jobSubClassification && { jobSubClassification }),
+        ...(startDate && { startDate }), // 将开始日期添加到查询字符串
+        ...(endDate && { endDate }),     // 将结束日期添加到查询字符串
       });
 
-      // 发起 GET 请求
       const response = await fetch(`http://localhost:3000/v1/job-detail-list?${queryString}`, {
         method: 'GET',
       });
 
-      // 确保请求成功
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // 解析 JSON 响应
       const data: JobDetail[] = await response.json();
-
-      // 处理响应数据
       setJobs(data);
     } catch (err) {
-      setError(err as Error); // 确保错误被正确处理
+      setError(err as Error);
     } finally {
       setLoading(false);
     }
@@ -63,52 +60,121 @@ const JobFilter: React.FC = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [minSalary, maxSalary]);
+  }, [minSalary, maxSalary, jobSubClassification, startDate, endDate]);
+
+  useEffect(() => {
+    const fetchJobSubClassifications = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/v1/job-detail-list');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        const uniqueJobSubClassifications = [...new Set(data.map((job: JobDetail) => job.jobSubClassification))];
+        setJobSubClassifications(uniqueJobSubClassifications);
+      } catch (error) {
+        console.error('Failed to fetch job sub-classifications:', error);
+      }
+    };
+    fetchJobSubClassifications();
+  }, []);
 
   return (
     <Box p={3}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ display: 'flex', gap: 2 , justifyContent: 'center'}}>
         Job List
       </Typography>
 
-      <Box mb={3}>
-        <Typography variant="subtitle1">Salary Range：</Typography>
-        <Select
-          value={minSalary}
-          onChange={(e) => setMinSalary(e.target.value)}
-          displayEmpty
-          inputProps={{ 'aria-label': '选择最低工资' }}
-          sx={{ mr: 2 }}
-        >
-          <MenuItem value="15000">15000</MenuItem>
-          <MenuItem value="17000">17000</MenuItem>
-          <MenuItem value="20000">20000</MenuItem>
-          <MenuItem value="25000">25000</MenuItem>
-        </Select>
-        <Select
-          value={maxSalary}
-          onChange={(e) => setMaxSalary(e.target.value)}
-          displayEmpty
-          inputProps={{ 'aria-label': '选择最高工资' }}
-        >
-          <MenuItem value="15000">15000</MenuItem>
-          <MenuItem value="17000">17000</MenuItem>
-          <MenuItem value="20000">20000</MenuItem>
-          <MenuItem value="25000">25000</MenuItem>
-        </Select>
+      <Box mb={4} sx={{ display: 'flex', gap: 2 , justifyContent: 'center' }}>
+        <Box>
+          <Typography variant="subtitle1">Salary Range：</Typography>
+          <Select
+            value={minSalary}
+            onChange={(e) => setMinSalary(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': '选择最低工资' }}
+            sx={{ mr: 2 }}
+          >
+            <MenuItem value="15000">15000</MenuItem>
+            <MenuItem value="17000">17000</MenuItem>
+            <MenuItem value="20000">20000</MenuItem>
+            <MenuItem value="25000">25000</MenuItem>
+            <MenuItem value="30000">30000</MenuItem>
+            <MenuItem value="35000">35000</MenuItem>
+            <MenuItem value="40000">40000</MenuItem>
+            <MenuItem value="50000">50000</MenuItem>
+            <MenuItem value="60000">60000</MenuItem>
+            <MenuItem value="80000">80000</MenuItem>
+            <MenuItem value="120000">120000</MenuItem>
+            <MenuItem value="120000-">120000-</MenuItem>
+          </Select>
+          <Select
+            value={maxSalary}
+            onChange={(e) => setMaxSalary(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': '选择最高工资' }}
+          >
+            <MenuItem value="15000">15000</MenuItem>
+            <MenuItem value="17000">17000</MenuItem>
+            <MenuItem value="20000">20000</MenuItem>
+            <MenuItem value="25000">25000</MenuItem>
+            <MenuItem value="30000">30000</MenuItem>
+            <MenuItem value="35000">35000</MenuItem>
+            <MenuItem value="40000">40000</MenuItem>
+            <MenuItem value="50000">50000</MenuItem>
+            <MenuItem value="60000">60000</MenuItem>
+            <MenuItem value="80000">80000</MenuItem>
+            <MenuItem value="120000">120000</MenuItem>
+            <MenuItem value="120000-">120000-</MenuItem>
+          </Select>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1">Type：</Typography>
+          <Select
+            value={jobSubClassification}
+            onChange={(e) => setJobSubClassification(e.target.value)}
+            displayEmpty
+            inputProps={{ 'aria-label': '选择职位分类' }}
+            sx={{ mr: 2 }}
+          >
+            <MenuItem value="">
+              <em>All</em>
+            </MenuItem>
+            {jobSubClassifications.map((subClass, index) => (
+              <MenuItem key={index} value={subClass}>
+                {subClass}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1">Start Date：</Typography>
+          <TextField
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1">End Date：</Typography>
+          <TextField
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Box>
       </Box>
 
       {loading && <Typography>Loading...</Typography>}
       {error && <Typography>Error: {error.message}</Typography>}
 
-      <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
-        <Grid container spacing={3}>
-          {jobs.map((job) => (
-            <Grid item xs={12} sm={6} md={4} key={job._id}>
-              <JobCard job={job} />
-            </Grid>
-          ))}
-        </Grid>
+      <Box sx={{ width: '90vw', maxHeight: 600, overflowY: 'auto' }}>
+        <JobTable jobs={jobs} />
       </Box>
     </Box>
   );
