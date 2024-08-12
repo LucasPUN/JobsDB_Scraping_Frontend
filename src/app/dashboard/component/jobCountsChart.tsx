@@ -1,9 +1,7 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
-import { JobCount } from '@/api/jobCountApi';
-import { aggregateJobCountsByDate } from '@/app/dashboard/component/aggregateJobCounts';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -19,9 +17,17 @@ const JobCountsChart: React.FC<JobCountsChartProps> = ({ aggregatedJobCounts }) 
     setSelectedSalaryRange(event.target.value as string);
   };
 
-  // Filter the job counts based on the selected salary range
+  // Filter and aggregate job counts based on the selected salary range
   const filteredJobCounts = selectedSalaryRange === 'ALL'
-    ? aggregatedJobCounts
+    ? aggregatedJobCounts.reduce((acc: { date: string; total: number }[], curr) => {
+      const existingEntry = acc.find((entry) => entry.date === curr.date);
+      if (existingEntry) {
+        existingEntry.total += curr.total;
+      } else {
+        acc.push({ date: curr.date, total: curr.total });
+      }
+      return acc;
+    }, [])
     : aggregatedJobCounts.filter((jobCount) => jobCount.salaryRange === selectedSalaryRange);
 
   const data = {
