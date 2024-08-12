@@ -26,6 +26,7 @@ import JobCountsChart from "@/app/dashboard/component/jobCountsChart";
 import {aggregateJobCountsByDate} from "@/app/dashboard/component/aggregateJobCounts";
 import JobFilter from "@/app/dashboard/component/seacrhBox";
 import {AppBar} from "@mui/material";
+import LanguageCountsChart from "@/app/dashboard/component/languageCountsChart";
 
 
 function Copyright(props: any) {
@@ -47,17 +48,8 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-
-  const filteredJobCounts = jobCounts.filter((jobCount) =>
-    Object.values(jobCount).some((value) =>
-      value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
-
-
-
-  const aggregatedJobCounts = aggregateJobCountsByDate(filteredJobCounts);
-  console.log(aggregatedJobCounts);
+  const aggregatedJobCounts = aggregateJobCountsByDate(jobCounts);
+  console.log(jobCounts);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -94,12 +86,12 @@ export default function Dashboard() {
         </Typography>
       </AppBar>
 
-
       <Box padding={5} sx={{display: 'flex', width: '90vw'}}>
 
         <Grid container spacing={1}>
 
           <JobFilter/>
+
 
 
           <Grid container spacing={2}>
@@ -111,13 +103,24 @@ export default function Dashboard() {
 
             <Grid item xs={12} md={6}>
               <Paper sx={{p: 2, display: 'flex', flexDirection: 'column', height: '100%'}}>
-                <JobCountsChart aggregatedJobCounts={aggregatedJobCounts}/>
+                <LanguageCountsChart languageJobCounts={jobCounts}/>
               </Paper>
             </Grid>
+
+
+          <Grid item xs={12} md={12}>
+            <Paper sx={{marginTop: '24px', display: 'flex', flexDirection: 'column', height: '100%'}}>
+              <JobCountsChart aggregatedJobCounts={aggregatedJobCounts}/>
+            </Paper>
           </Grid>
 
+          </Grid>
+
+
         </Grid>
+
       </Box>
+
       <Copyright sx={{pt: 4}}/>
 
 

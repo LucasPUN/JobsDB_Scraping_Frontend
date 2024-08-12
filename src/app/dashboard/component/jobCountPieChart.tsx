@@ -46,23 +46,26 @@ const JobCountsPieChart: React.FC<JobCountsPieChartProps> = ({ jobCounts, select
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF5722', '#FF4081', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3'];
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <PieChart>
-        <Pie
-          data={pieChartData}
-          dataKey="value"
-          nameKey="name"
-          outerRadius={150}
-          fill="#8884d8"
-        >
-          {pieChartData.map((_, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
+    <div style={{ textAlign: 'center' }}>
+      Language Counts Over Time
+      <ResponsiveContainer width="100%" height={400}>
+        <PieChart>
+          <Pie
+            data={pieChartData}
+            dataKey="value"
+            nameKey="name"
+            outerRadius={150}
+            fill="#8884d8"
+          >
+            {pieChartData.map((_, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
