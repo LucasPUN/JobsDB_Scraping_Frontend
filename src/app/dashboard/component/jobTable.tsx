@@ -1,5 +1,17 @@
-import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
+import React, {useState} from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Typography
+} from '@mui/material';
 import Link from "@mui/material/Link";
 
 interface JobDetail {
@@ -20,7 +32,7 @@ interface JobTableProps {
   jobs: JobDetail[];
 }
 
-const JobTable: React.FC<JobTableProps> = ({ jobs }) => {
+const JobTable: React.FC<JobTableProps> = ({jobs}) => {
   const [selectedJob, setSelectedJob] = useState<JobDetail | null>(null);
 
   const handleRowClick = (job: JobDetail) => {
@@ -46,7 +58,7 @@ const JobTable: React.FC<JobTableProps> = ({ jobs }) => {
           </TableHead>
           <TableBody>
             {jobs.map((job) => (
-              <TableRow key={job._id} onClick={() => handleRowClick(job)} style={{ cursor: 'pointer' }}>
+              <TableRow key={job._id} onClick={() => handleRowClick(job)} style={{cursor: 'pointer'}}>
                 <TableCell>{new Date(job.date).toLocaleDateString()}</TableCell>
                 <TableCell>{job.jobTitle}</TableCell>
                 <TableCell>{job.jobSubClassification}</TableCell>
@@ -62,27 +74,27 @@ const JobTable: React.FC<JobTableProps> = ({ jobs }) => {
           <>
             <DialogTitle>{selectedJob.jobTitle}</DialogTitle>
             <DialogContent>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Company: {selectedJob.jobCompany}
+              <Typography variant="body2" component="p">
+                <strong>Company:</strong> {selectedJob.jobCompany}
               </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Location: {selectedJob.jobLocation}
+              <Typography variant="body2" component="p">
+                <strong>Location:</strong> {selectedJob.jobLocation}
               </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Salary: {selectedJob.salaryRange}
+              <Typography variant="body2" component="p">
+                <strong>Salary:</strong> {selectedJob.salaryRange}
               </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Date: {new Date(selectedJob.date).toLocaleDateString()}
+              <Typography variant="body2" component="p">
+                <strong>Date:</strong> {new Date(selectedJob.date).toLocaleDateString()}
               </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
-                Classification: {selectedJob.jobSubClassification}
+              <Typography variant="body2" component="p">
+                <strong>Classification:</strong> {selectedJob.jobSubClassification}
               </Typography>
               <Typography variant="body2" color="textSecondary" component="p">
                 <Link href={`https://hk.jobsdb.com/job/${selectedJob.id}`} target="_blank" rel="noopener">
                   View Job Posting
                 </Link>
               </Typography>
-              <Typography variant="body2" color="textSecondary" component="p">
+              <Typography variant="body2" component="p">
                 Details: {selectedJob.jobAdDetails}
               </Typography>
             </DialogContent>

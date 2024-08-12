@@ -69,6 +69,7 @@ export default function Dashboard() {
       setJobCounts(data);
       setLoading(false);
     } catch (error) {
+      // @ts-ignore
       setError(error.message);
       setLoading(false);
     }

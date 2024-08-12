@@ -15,6 +15,7 @@ const JobCountsPieChart: React.FC<JobCountsPieChartProps> = ({ jobCounts, select
     const aggregatedTotals: JobCount = jobCounts.reduce((acc, jobCount) => {
       Object.keys(jobCount).forEach((key) => {
         if (key !== '_id' && key !== 'date') {
+          // @ts-ignore
           acc[key as keyof JobCount] = (acc[key as keyof JobCount] || 0) + (jobCount[key as keyof JobCount] || 0);
         }
       });
