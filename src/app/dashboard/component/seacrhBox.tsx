@@ -18,7 +18,7 @@ interface JobDetail {
 
 const JobFilter: React.FC = () => {
   const [minSalary, setMinSalary] = useState<string>('15000');
-  const [maxSalary, setMaxSalary] = useState<string>('25000');
+  const [maxSalary, setMaxSalary] = useState<string>('120000-');
   const [jobSubClassifications, setJobSubClassifications] = useState<string[]>([]);
   const [jobSubClassification, setJobSubClassification] = useState('');
   const [startDate, setStartDate] = useState<string>(''); // 新增开始日期状态
@@ -37,8 +37,8 @@ const JobFilter: React.FC = () => {
       const queryString = buildQueryString({
         salaryRange: `${minSalary}-${maxSalary}`,
         ...(jobSubClassification && { jobSubClassification }),
-        ...(startDate && { startDate }), // 将开始日期添加到查询字符串
-        ...(endDate && { endDate }),     // 将结束日期添加到查询字符串
+        ...(startDate && { startDate }),
+        ...(endDate && { endDate }),
       });
 
       const response = await fetch(`http://localhost:3000/v1/job-detail-list?${queryString}`, {
@@ -50,13 +50,18 @@ const JobFilter: React.FC = () => {
       }
 
       const data: JobDetail[] = await response.json();
-      setJobs(data);
+
+      // Sort the jobs by date in descending order
+      const sortedData = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      setJobs(sortedData);
     } catch (err) {
       setError(err as Error);
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchJobs();
@@ -70,6 +75,7 @@ const JobFilter: React.FC = () => {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        // @ts-ignore
         const uniqueJobSubClassifications = [...new Set(data.map((job: JobDetail) => job.jobSubClassification))];
         setJobSubClassifications(uniqueJobSubClassifications);
       } catch (error) {
@@ -92,7 +98,6 @@ const JobFilter: React.FC = () => {
             value={minSalary}
             onChange={(e) => setMinSalary(e.target.value)}
             displayEmpty
-            inputProps={{ 'aria-label': '选择最低工资' }}
             sx={{ mr: 2 }}
           >
             <MenuItem value="15000">15000</MenuItem>
@@ -112,7 +117,6 @@ const JobFilter: React.FC = () => {
             value={maxSalary}
             onChange={(e) => setMaxSalary(e.target.value)}
             displayEmpty
-            inputProps={{ 'aria-label': '选择最高工资' }}
           >
             <MenuItem value="15000">15000</MenuItem>
             <MenuItem value="17000">17000</MenuItem>
@@ -135,7 +139,6 @@ const JobFilter: React.FC = () => {
             value={jobSubClassification}
             onChange={(e) => setJobSubClassification(e.target.value)}
             displayEmpty
-            inputProps={{ 'aria-label': '选择职位分类' }}
             sx={{ mr: 2 }}
           >
             <MenuItem value="">

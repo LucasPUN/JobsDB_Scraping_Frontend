@@ -54,7 +54,10 @@ export default function Dashboard() {
     )
   );
 
+
+
   const aggregatedJobCounts = aggregateJobCountsByDate(filteredJobCounts);
+  console.log(aggregatedJobCounts);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -91,7 +94,7 @@ export default function Dashboard() {
       </AppBar>
 
 
-      <Box padding={5} sx={{display: 'flex', width: '68vw'}}>
+      <Box padding={5} sx={{display: 'flex', width: '90vw'}}>
 
         <Grid container spacing={1}>
 

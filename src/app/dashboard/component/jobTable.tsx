@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
+import Link from "@mui/material/Link";
 
 interface JobDetail {
   _id: string;
@@ -75,6 +76,11 @@ const JobTable: React.FC<JobTableProps> = ({ jobs }) => {
               </Typography>
               <Typography variant="body2" color="textSecondary" component="p">
                 Classification: {selectedJob.jobSubClassification}
+              </Typography>
+              <Typography variant="body2" color="textSecondary" component="p">
+                <Link href={`https://hk.jobsdb.com/job/${selectedJob.id}`} target="_blank" rel="noopener">
+                  View Job Posting
+                </Link>
               </Typography>
               <Typography variant="body2" color="textSecondary" component="p">
                 Details: {selectedJob.jobAdDetails}

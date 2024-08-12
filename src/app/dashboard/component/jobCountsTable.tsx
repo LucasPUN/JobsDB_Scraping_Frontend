@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, ReactNode } from 'react';
 import {
   Paper,
   TextField,
@@ -7,9 +7,10 @@ import {
   Select,
   InputLabel,
   FormControl,
+  SelectChangeEvent,
 } from '@mui/material';
-import JobCountsPieChart from "./jobCountPieChart"; // Adjust the path accordingly
-import { JobCount } from "@/api/jobCountApi"; // Adjust the path accordingly
+import JobCountsPieChart from './jobCountPieChart'; // Adjust the path accordingly
+import { JobCount } from '@/api/jobCountApi'; // Adjust the path accordingly
 
 type JobCountsTableProps = {
   jobCounts: JobCount[];
@@ -17,45 +18,73 @@ type JobCountsTableProps = {
 
 const JobCountsTable: React.FC<JobCountsTableProps> = ({ jobCounts }) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<string>('ALL'); // Default to 'ALL'
+  const [selectedDate, setSelectedDate] = useState<string>('ALL');
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
-  const handleDateChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleDateChange = (event: SelectChangeEvent<string>, child: ReactNode) => {
     setSelectedDate(event.target.value as string);
   };
 
-  // Filter job counts based on search query
-  const filteredJobCounts = jobCounts.filter((jobCount) =>
-    Object.values(jobCount).some((value) =>
+  const handleStartDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setStartDate(event.target.value);
+  };
+
+  const handleEndDateChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setEndDate(event.target.value);
+  };
+
+  // Filter job counts based on search query and date range
+  const filteredJobCounts = jobCounts.filter((jobCount) => {
+    const matchesSearchQuery = Object.values(jobCount).some((value) =>
       value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+    );
+
+    const jobDate = new Date(jobCount.date);
+    const isWithinDateRange =
+      (!startDate || new Date(startDate) <= jobDate) &&
+      (!endDate || jobDate <= new Date(endDate));
+
+    return matchesSearchQuery && isWithinDateRange;
+  });
 
   // Get unique dates from the filtered job counts
-  const uniqueDates = Array.from(new Set(filteredJobCounts.map(jobCount => jobCount.date)));
+  const uniqueDates = Array.from(new Set(filteredJobCounts.map((jobCount) => jobCount.date)));
 
   return (
     <Paper>
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="select-date-label">Select Date</InputLabel>
-        <Select
-          labelId="select-date-label"
-          value={selectedDate}
-          onChange={handleDateChange}
-          label="Select Date"
-        >
-          <MenuItem value="ALL">All Dates</MenuItem>
-          {uniqueDates.map(date => (
-            <MenuItem key={date} value={date}>
-              {new Date(date).toLocaleDateString()}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+
       <Grid container spacing={3}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="Start Date"
+            type="date"
+            value={startDate}
+            onChange={handleStartDateChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            fullWidth
+            margin="normal"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            label="End Date"
+            type="date"
+            value={endDate}
+            onChange={handleEndDateChange}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            fullWidth
+            margin="normal"
+          />
+        </Grid>
         <Grid item xs={12}>
           <JobCountsPieChart jobCounts={filteredJobCounts} selectedDate={selectedDate} />
         </Grid>
