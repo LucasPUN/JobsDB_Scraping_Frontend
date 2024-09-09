@@ -29,7 +29,7 @@ type LanguageJobCount = {
   MySQL: number;
   NoSQL: number;
   date: string;
-  count: number;
+  [key: string]: number | string | undefined;
 };
 
 type LanguageCountsChartProps = {
@@ -47,18 +47,38 @@ const LanguageCountsChart: React.FC<LanguageCountsChartProps> = ({ languageJobCo
     ? Object.keys(languageJobCounts[0]).filter(key => !['date', '_id', 'SalaryRange', 'Total'].includes(key))
     : [];
 
+  // 合并相同日期的数据
+  const mergedLanguageJobCounts = languageJobCounts.reduce((acc, jobCount) => {
+    const existingEntry = acc.find(item => item.date === jobCount.date);
+    if (existingEntry) {
+      languages.forEach(language => {
+        existingEntry[language as keyof LanguageJobCount] =
+          ((existingEntry[language as keyof LanguageJobCount] || 0) as number) +
+          ((jobCount[language as keyof LanguageJobCount] || 0) as number);
+      });
+      existingEntry.Total = (existingEntry.Total || 0) + (jobCount.Total || 0);
+    } else {
+      acc.push({ ...jobCount });
+    }
+    return acc;
+  }, [] as LanguageJobCount[]);
+
+  const sortedLanguageJobCounts = mergedLanguageJobCounts.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+
   const data = {
-    labels: languageJobCounts.map((jobCount) => new Date(jobCount.date).toLocaleDateString()),
+    labels: sortedLanguageJobCounts.map((jobCount) => new Date(jobCount.date).toLocaleDateString()),
     datasets: selectedLanguage === 'ALL'
       ? languages.map((language) => ({
         label: language,
-        data: languageJobCounts.map((jobCount) => jobCount[language as keyof LanguageJobCount] || 0),
+        data: sortedLanguageJobCounts.map((jobCount) => jobCount[language as keyof LanguageJobCount] || 0),
         borderColor: getRandomColor(),
         fill: false,
       }))
       : [{
         label: selectedLanguage,
-        data: languageJobCounts.map((jobCount) => jobCount[selectedLanguage as keyof LanguageJobCount] || 0),
+        data: sortedLanguageJobCounts.map((jobCount) => jobCount[selectedLanguage as keyof LanguageJobCount] || 0),
         borderColor: 'rgba(75,192,192,1)',
         backgroundColor: 'rgba(75,192,192,0.4)',
         fill: false,

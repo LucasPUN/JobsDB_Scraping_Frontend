@@ -30,12 +30,15 @@ const JobCountsChart: React.FC<JobCountsChartProps> = ({ aggregatedJobCounts }) 
     }, [])
     : aggregatedJobCounts.filter((jobCount) => jobCount.salaryRange === selectedSalaryRange);
 
+  // Sort job counts by date in ascending order
+  const sortedJobCounts = filteredJobCounts.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
   const data = {
-    labels: filteredJobCounts.map((jobCount) => jobCount.date),
+    labels: sortedJobCounts.map((jobCount) => jobCount.date),
     datasets: [
       {
         label: 'Total Job Counts',
-        data: filteredJobCounts.map((jobCount) => jobCount.total),
+        data: sortedJobCounts.map((jobCount) => jobCount.total),
         fill: false,
         backgroundColor: 'rgba(75,192,192,0.4)',
         borderColor: 'rgba(75,192,192,1)',
