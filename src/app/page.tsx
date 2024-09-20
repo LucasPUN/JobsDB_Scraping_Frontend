@@ -5,9 +5,9 @@ import {redirect} from "next/navigation";
 
 export default function Home() {
   const {loginUser} = useAuthContext();
-  if (loginUser) {
+  // if (loginUser) {
     redirect("/dashboard")
-  } else if (loginUser === null) {
-    redirect("/login");
-  }
+  // } else if (loginUser === null) {
+  //   redirect("/login");
+  // }
 }

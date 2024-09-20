@@ -17,7 +17,7 @@ interface JobDetail {
 }
 
 const JobFilter: React.FC = () => {
-  const [minSalary, setMinSalary] = useState<string>('15000');
+  const [minSalary, setMinSalary] = useState<string>('0');
   const [maxSalary, setMaxSalary] = useState<string>('120000-');
   const [jobSubClassifications, setJobSubClassifications] = useState<string[]>([]);
   const [jobSubClassification, setJobSubClassification] = useState('');
@@ -41,7 +41,7 @@ const JobFilter: React.FC = () => {
         ...(endDate && { endDate }),
       });
 
-      const response = await fetch(`http://localhost:3000/v1/job-detail-list?${queryString}`, {
+      const response = await fetch(`https://jobsdb-scraping-nodejs.onrender.com/v1/job-detail-list?${queryString}`, {
         method: 'GET',
       });
 
@@ -70,7 +70,7 @@ const JobFilter: React.FC = () => {
   useEffect(() => {
     const fetchJobSubClassifications = async () => {
       try {
-        const response = await fetch('http://localhost:3000/v1/job-detail-list');
+        const response = await fetch('https://jobsdb-scraping-nodejs.onrender.com/v1/job-detail-list');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -100,7 +100,9 @@ const JobFilter: React.FC = () => {
             displayEmpty
             sx={{ mr: 2 }}
           >
-            <MenuItem value="15000">15000</MenuItem>
+            <MenuItem value="0">0</MenuItem>
+            <MenuItem value="11000">11000</MenuItem>
+            <MenuItem value="14000">14000</MenuItem>
             <MenuItem value="17000">17000</MenuItem>
             <MenuItem value="20000">20000</MenuItem>
             <MenuItem value="25000">25000</MenuItem>
@@ -118,7 +120,8 @@ const JobFilter: React.FC = () => {
             onChange={(e) => setMaxSalary(e.target.value)}
             displayEmpty
           >
-            <MenuItem value="15000">15000</MenuItem>
+            <MenuItem value="11000">11000</MenuItem>
+            <MenuItem value="14000">14000</MenuItem>
             <MenuItem value="17000">17000</MenuItem>
             <MenuItem value="20000">20000</MenuItem>
             <MenuItem value="25000">25000</MenuItem>

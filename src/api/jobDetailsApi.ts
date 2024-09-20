@@ -1,6 +1,6 @@
 import {JobCount} from "@/api/jobCountApi";
 
-const API_BASE_URL = 'http://localhost:3000/v1';
+const API_BASE_URL = 'https://jobsdb-scraping-nodejs.onrender.com/v1';
 
 export const fetchJobDetails = async (): Promise<JobCount[]> => {
   try {
