@@ -30,16 +30,16 @@ const JobCountsPieChart: React.FC<JobCountsPieChartProps> = ({ jobCounts, select
 
   // Prepare pie chart data
   const pieChartData = [
-    { name: 'Java', value: filteredData.Java },
-    { name: 'Python', value: filteredData.Python },
-    { name: 'JavaScript', value: filteredData.JavaScript },
-    { name: 'TypeScript', value: filteredData.TypeScript },
-    { name: 'ReactJS', value: filteredData.ReactJS },
-    { name: 'VueJs', value: filteredData.VueJs },
-    { name: 'Spring', value: filteredData.Spring },
-    { name: 'NodeJS', value: filteredData.NodeJS },
-    { name: 'MySQL', value: filteredData.MySQL },
-    { name: 'NoSQL', value: filteredData.NoSQL },
+    { name: 'Java', value: filteredData.javaCount },
+    { name: 'Python', value: filteredData.pythonCount },
+    { name: 'JavaScript', value: filteredData.javaScriptCount },
+    { name: 'TypeScript', value: filteredData.typeScriptCount },
+    { name: 'ReactJS', value: filteredData.reactJsCount },
+    { name: 'VueJs', value: filteredData.vueJsCount },
+    { name: 'Spring', value: filteredData.springCount },
+    { name: 'NodeJS', value: filteredData.nodeJsCount },
+    { name: 'MySQL', value: filteredData.mySqlCount },
+    { name: 'NoSQL', value: filteredData.noSqlCount },
   ].filter(item => item.value > 0); // Remove items with 0 value
 
   // Define colors for pie chart segments

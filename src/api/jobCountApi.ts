@@ -5,16 +5,16 @@ export type JobCount = {
   _id: string;
   SalaryRange: string;
   Total: number;
-  Java: number;
-  Python: number;
-  JavaScript: number;
-  TypeScript: number;
-  ReactJS: number;
-  VueJs: number;
-  Spring: number;
-  NodeJS: number;
-  MySQL: number;
-  NoSQL: number;
+  javaCount: number;
+  pythonCount: number;
+  javaScriptCount: number;
+  typeScriptCount: number;
+  reactJsCount: number;
+  vueJsCount: number;
+  springCount: number;
+  nodeJsCount: number;
+  mySqlCount: number;
+  noSqlCount: number;
   date: string;
 };
 
