@@ -18,7 +18,7 @@ interface JobDetail {
 
 const JobFilter: React.FC = () => {
   const [minSalary, setMinSalary] = useState<string>('0');
-  const [maxSalary, setMaxSalary] = useState<string>('120000-');
+  const [maxSalary, setMaxSalary] = useState<string>('120000');
   const [jobSubClassifications, setJobSubClassifications] = useState<string[]>([]);
   const [jobSubClassification, setJobSubClassification] = useState('');
   const [startDate, setStartDate] = useState<string>(''); // 新增开始日期状态
@@ -113,7 +113,6 @@ const JobFilter: React.FC = () => {
             <MenuItem value="60000">60000</MenuItem>
             <MenuItem value="80000">80000</MenuItem>
             <MenuItem value="120000">120000</MenuItem>
-            <MenuItem value="120000-">120000-</MenuItem>
           </Select>
           <Select
             value={maxSalary}
@@ -132,7 +131,6 @@ const JobFilter: React.FC = () => {
             <MenuItem value="60000">60000</MenuItem>
             <MenuItem value="80000">80000</MenuItem>
             <MenuItem value="120000">120000</MenuItem>
-            <MenuItem value="120000-">120000-</MenuItem>
           </Select>
         </Box>
 

@@ -60,9 +60,11 @@ const JobTable: React.FC<JobTableProps> = ({jobs}) => {
             {jobs.map((job) => (
               <TableRow key={job._id} onClick={() => handleRowClick(job)} style={{cursor: 'pointer'}}>
                 <TableCell>{new Date(job.date).toLocaleDateString()}</TableCell>
+                <TableCell>{job.jobCompany}</TableCell>
                 <TableCell>{job.jobTitle}</TableCell>
                 <TableCell>{job.jobSubClassification}</TableCell>
                 <TableCell>{job.salaryRange}</TableCell>
+                <TableCell>{job.jobLocation}</TableCell>
               </TableRow>
             ))}
           </TableBody>
