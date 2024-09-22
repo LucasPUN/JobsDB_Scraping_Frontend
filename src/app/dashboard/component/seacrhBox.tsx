@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Box, Typography, Select, MenuItem, TextField } from '@mui/material';
+import { Grid, Box, Typography, Select, MenuItem, TextField, CircularProgress } from '@mui/material';
 import JobTable from "@/app/dashboard/component/jobTable";
 
 interface JobDetail {
@@ -21,8 +21,8 @@ const JobFilter: React.FC = () => {
   const [maxSalary, setMaxSalary] = useState<string>('120000');
   const [jobSubClassifications, setJobSubClassifications] = useState<string[]>([]);
   const [jobSubClassification, setJobSubClassification] = useState('');
-  const [startDate, setStartDate] = useState<string>(''); // 新增开始日期状态
-  const [endDate, setEndDate] = useState<string>(''); // 新增结束日期状态
+  const [startDate, setStartDate] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
   const [jobs, setJobs] = useState<JobDetail[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -50,8 +50,6 @@ const JobFilter: React.FC = () => {
       }
 
       const data: JobDetail[] = await response.json();
-
-      // Sort the jobs by date in descending order
       const sortedData = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
       setJobs(sortedData);
@@ -61,7 +59,6 @@ const JobFilter: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   useEffect(() => {
     fetchJobs();
@@ -86,101 +83,109 @@ const JobFilter: React.FC = () => {
   }, []);
 
   return (
-    <Box p={3}>
-      <Typography variant="h4" gutterBottom sx={{ display: 'flex', gap: 2 , justifyContent: 'center'}}>
-        Job List
-      </Typography>
+      <Box p={3}>
+        <Typography variant="h4" gutterBottom sx={{ display: 'flex', justifyContent: 'center' }}>
+          Job List
+        </Typography>
 
-      <Box mb={4} sx={{ display: 'flex', gap: 2 , justifyContent: 'center' }}>
-        <Box>
-          <Typography variant="subtitle1">Salary Range：</Typography>
-          <Select
-            value={minSalary}
-            onChange={(e) => setMinSalary(e.target.value)}
-            displayEmpty
-            sx={{ mr: 2 }}
-          >
-            <MenuItem value="0">0</MenuItem>
-            <MenuItem value="11000">11000</MenuItem>
-            <MenuItem value="14000">14000</MenuItem>
-            <MenuItem value="17000">17000</MenuItem>
-            <MenuItem value="20000">20000</MenuItem>
-            <MenuItem value="25000">25000</MenuItem>
-            <MenuItem value="30000">30000</MenuItem>
-            <MenuItem value="35000">35000</MenuItem>
-            <MenuItem value="40000">40000</MenuItem>
-            <MenuItem value="50000">50000</MenuItem>
-            <MenuItem value="60000">60000</MenuItem>
-            <MenuItem value="80000">80000</MenuItem>
-            <MenuItem value="120000">120000</MenuItem>
-          </Select>
-          <Select
-            value={maxSalary}
-            onChange={(e) => setMaxSalary(e.target.value)}
-            displayEmpty
-          >
-            <MenuItem value="11000">11000</MenuItem>
-            <MenuItem value="14000">14000</MenuItem>
-            <MenuItem value="17000">17000</MenuItem>
-            <MenuItem value="20000">20000</MenuItem>
-            <MenuItem value="25000">25000</MenuItem>
-            <MenuItem value="30000">30000</MenuItem>
-            <MenuItem value="35000">35000</MenuItem>
-            <MenuItem value="40000">40000</MenuItem>
-            <MenuItem value="50000">50000</MenuItem>
-            <MenuItem value="60000">60000</MenuItem>
-            <MenuItem value="80000">80000</MenuItem>
-            <MenuItem value="120000">120000</MenuItem>
-          </Select>
-        </Box>
+        <Grid container spacing={2} mb={4} justifyContent="center">
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">Salary Range:</Typography>
+            <Select
+                value={minSalary}
+                onChange={(e) => setMinSalary(e.target.value)}
+                fullWidth
+            >
+              <MenuItem value="0">0</MenuItem>
+              <MenuItem value="11000">11000</MenuItem>
+              <MenuItem value="14000">14000</MenuItem>
+              <MenuItem value="17000">17000</MenuItem>
+              <MenuItem value="20000">20000</MenuItem>
+              <MenuItem value="25000">25000</MenuItem>
+              <MenuItem value="30000">30000</MenuItem>
+              <MenuItem value="35000">35000</MenuItem>
+              <MenuItem value="40000">40000</MenuItem>
+              <MenuItem value="50000">50000</MenuItem>
+              <MenuItem value="60000">60000</MenuItem>
+              <MenuItem value="80000">80000</MenuItem>
+              <MenuItem value="120000">120000</MenuItem>
+            </Select>
+          </Grid>
 
-        <Box>
-          <Typography variant="subtitle1">Type：</Typography>
-          <Select
-            value={jobSubClassification}
-            onChange={(e) => setJobSubClassification(e.target.value)}
-            displayEmpty
-            sx={{ mr: 2 }}
-          >
-            <MenuItem value="">
-              <em>All</em>
-            </MenuItem>
-            {jobSubClassifications.map((subClass, index) => (
-              <MenuItem key={index} value={subClass}>
-                {subClass}
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">Max Salary:</Typography>
+            <Select
+                value={maxSalary}
+                onChange={(e) => setMaxSalary(e.target.value)}
+                fullWidth
+            >
+              <MenuItem value="11000">11000</MenuItem>
+              <MenuItem value="14000">14000</MenuItem>
+              <MenuItem value="17000">17000</MenuItem>
+              <MenuItem value="20000">20000</MenuItem>
+              <MenuItem value="25000">25000</MenuItem>
+              <MenuItem value="30000">30000</MenuItem>
+              <MenuItem value="35000">35000</MenuItem>
+              <MenuItem value="40000">40000</MenuItem>
+              <MenuItem value="50000">50000</MenuItem>
+              <MenuItem value="60000">60000</MenuItem>
+              <MenuItem value="80000">80000</MenuItem>
+              <MenuItem value="120000">120000</MenuItem>
+            </Select>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">Type:</Typography>
+            <Select
+                value={jobSubClassification}
+                onChange={(e) => setJobSubClassification(e.target.value)}
+                fullWidth
+            >
+              <MenuItem value="">
+                <em>All</em>
               </MenuItem>
-            ))}
-          </Select>
-        </Box>
+              {jobSubClassifications.map((subClass, index) => (
+                  <MenuItem key={index} value={subClass}>
+                    {subClass}
+                  </MenuItem>
+              ))}
+            </Select>
+          </Grid>
 
-        <Box>
-          <Typography variant="subtitle1">Start Date：</Typography>
-          <TextField
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Box>
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">Start Date:</Typography>
+            <TextField
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
 
-        <Box>
-          <Typography variant="subtitle1">End Date：</Typography>
-          <TextField
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
+          <Grid item xs={12} sm={6} md={4}>
+            <Typography variant="subtitle1">End Date:</Typography>
+            <TextField
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                fullWidth
+                InputLabelProps={{ shrink: true }}
+            />
+          </Grid>
+        </Grid>
+
+        {loading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '20vh' }}>
+              <CircularProgress />
+            </Box>
+        )}
+        {error && <Typography color="error">Error: {error.message}</Typography>}
+
+        <Box sx={{ width: '100%', maxWidth: '90vw', maxHeight: 600, overflowY: 'auto', margin: '0 auto' }}>
+          <JobTable jobs={jobs} />
         </Box>
       </Box>
-
-      {loading && <Typography>Loading...</Typography>}
-      {error && <Typography>Error: {error.message}</Typography>}
-
-      <Box sx={{ width: '90vw', maxHeight: 600, overflowY: 'auto' }}>
-        <JobTable jobs={jobs} />
-      </Box>
-    </Box>
   );
 };
 
